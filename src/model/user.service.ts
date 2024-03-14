@@ -126,6 +126,19 @@ export class UserService {
       return null;
     }
   }
+  async saveUserLanguage(mobileNumber: string, botID: string, language: string): Promise<void>{
+    const user=await this.findUserByMobileNumber(mobileNumber, botID);
+    if(user){
+      user.language=language;
+      const updateParams={
+        TableName: USERS_TABLE,
+        Item: user,
+      };
+      await dynamoDBClient().put(updateParams).promise();
+    } else{
+      console.error('User not found:',mobileNumber);
+    }
+  }
 
   // async saveUser(user: User): Promise<User | any> {
   //   const newUser = {

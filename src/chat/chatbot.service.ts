@@ -45,8 +45,8 @@ export class ChatbotService {
       let user_context = await this.userService.updateUserContext(from,this.botId,button_response.body);
       console.log(user_context);
     }
-    if (userData.language === 'english' || userData.language === 'hindi') {
-      // await this.userService.saveUser(userData);
+    if (userData.language === 'english' || userData.language === 'hindi'|| userData.language === 'gujarati') {
+      await this.userService.saveUserLanguage(from, this.botId, userData.language);
     }
     return 'ok';
   }
@@ -245,5 +245,52 @@ export class ChatbotService {
     }
   }
 
+  private async LangButtons(from: string): Promise<void> {
+    const url = `${this.apiUrl}/${this.botId}/messages`;
+    const messageData = {
+    to: from,
+    type: 'button',
+    button: {
+        body: {
+        type: 'text',
+        text: {
+            body: 'choose language'
+        },
+        },
+        buttons: [
+        {
+            type: 'solid',
+            body: 'Hindi',
+            reply: 'Hindi',
+        },
+        {
+            type: 'solid',
+            body: 'English',
+            reply: 'English',
+        },
+        {
+          type:'solid',
+          body:'Gujarati',
+          reply:'Gujarati'
+        }
+        ],
+        allow_custom_response: false,
+    },
+    };
+    try {
+    const response = await axios.post(url, messageData, {
+        headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+        },
+    });
+    return response.data;
+    }
+    catch (error) {
+    console.error('errors:', error);
+    }
 }
+
+}
+
 export default ChatbotService;
